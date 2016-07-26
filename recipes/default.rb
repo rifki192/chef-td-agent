@@ -91,13 +91,30 @@ directory "/etc/td-agent/conf.d" do
   only_if { node["td_agent"]["includes"] }
 end
 
-package "td-agent" do
-  if node["td_agent"]["pinning_version"]
-    action :install
-    version node["td_agent"]["version"]
-  else
-    action :upgrade
-  end
+# package "td-agent" do
+#   if node["td_agent"]["pinning_version"]
+#     action :install
+#     version node["td_agent"]["version"]
+#   else
+#     action :upgrade
+#   end
+# end
+
+remote_file "/tmp/td-agent.deb" do
+    if node["td_agent"]["pinning_version"]
+      source "http://packages.treasuredata.com.s3.amazonaws.com/2/ubuntu/trusty/pool/contrib/t/td-agent/td-agent_#{node["td_agent"]["version"]}-0_amd64.deb"
+    else
+      source "http://packages.treasuredata.com.s3.amazonaws.com/2/ubuntu/trusty/pool/contrib/t/td-agent/td-agent_2.3.1-0_amd64.deb"
+    end
+    mode 0644
+    owner "root"
+    group "root"
+    checksum "65c942bce5c95876121bf71bb12707dbf9e1e7aacccf1464c853f6d5afdef8e4"
+end
+
+dpkg_package "td-agent" do
+  source "/tmp/td-agent.deb"
+  action :install
 end
 
 node["td_agent"]["plugins"].each do |plugin|
