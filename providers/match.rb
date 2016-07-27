@@ -37,7 +37,7 @@ action :create do
               params: params_to_text(new_resource.params),
               tag: new_resource.tag)
     cookbook 'td-agent'
-    notifies :restart, 'service[td-agent]'
+    #notifies :restart, 'service[td-agent]'
   end
 end
 
